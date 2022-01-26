@@ -69,14 +69,16 @@ app.get('/', (req, res) => {
                     // console.log(product.label)
                     product.assets.forEach(asset => {
                         asset.tokens.forEach(token => {
-                            let obj = {}
-                            obj["name"] = `${token.symbol}(${token.network})`;
-                            obj["balance"] = `$${token.balanceUSD.toFixed(2)}`
-                            productObj["assets"].push(obj)
-                            productObj["total"] += token.balanceUSD;
-                            // console.log(`${token.symbol}(${token.network}): $${token.balanceUSD}`)
-                            // console.log(token.balanceUSD)
-                            balance += token.balanceUSD;
+                            if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
+                                let obj = {}
+                                obj["name"] = `${token.symbol}(${token.network})`;
+                                obj["balance"] = `$${token.balanceUSD.toFixed(2)}`
+                                productObj["assets"].push(obj)
+                                productObj["total"] += token.balanceUSD;
+                                // console.log(`${token.symbol}(${token.network}): $${token.balanceUSD}`)
+                                // console.log(token.balanceUSD)
+                                balance += token.balanceUSD;
+                            }
                         })  
                     })
                 });
@@ -103,7 +105,7 @@ app.get('/', (req, res) => {
                     console.log(balances);
                     console.log('Total Balance: $' + balance);
                     res.render('index', { balances: balances, totalBalance: balance.toFixed(2) });
-                }, 1000);
+                }, 5000);
                 
             }
           });
