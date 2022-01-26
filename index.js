@@ -103,7 +103,7 @@ app.get('/', (req, res) => {
                     console.log(balances);
                     console.log('Total Balance: $' + balance);
                     res.render('index', { balances: balances, totalBalance: balance.toFixed(2) });
-                }, 1000);
+                }, 3000);
                 
             }
           });
