@@ -56,7 +56,7 @@ app.get('/', (req, res) => {
         productObj["name"] = address.name;
         productObj["assets"] = [];
         productObj["total"] = 0;
-        var es = new EventSource(`https://api.zapper.fi/v1/balances?addresses%5B0%5D=${address.address}&nonNilOnly=true&networks%5B0%5D=ethereum&networks%5B1%5D=polygon&networks%5B2%5D=optimism&networks%5B3%5D=xdai&networks%5B4%5D=binance-smart-chain&networks%5B5%5D=fantom&networks%5B6%5D=avalanche&networks%5B7%5D=arbitrum&networks%5B8%5D=celo&networks%5B9%5D=harmony&networks%5B10%5D=moonriver&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88`);        
+        var es = new EventSource(`https://api.zapper.fi/v1/balances?addresses%5B0%5D=${address.address}&nonNilOnly=true&networks%5B0%5D=ethereum&networks%5B1%5D=polygon&networks%5B2%5D=optimism&networks%5B3%5D=xdai&networks%5B4%5D=binance-smart-chain&networks%5B5%5D=fantom&networks%5B6%5D=avalanche&networks%5B7%5D=arbitrum&networks%5B8%5D=celo&networks%5B9%5D=harmony&networks%5B10%5D=moonriver&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa`);        
         es.on('start', function(e) {
             // status event
             console.log("Event Started");
@@ -69,14 +69,14 @@ app.get('/', (req, res) => {
                     // console.log(product.label)
                     product.assets.forEach(asset => {
                         asset.tokens.forEach(token => {
-                            let obj = {}
-                            obj["name"] = `${token.symbol}(${token.network})`;
-                            obj["balance"] = `$${token.balanceUSD.toFixed(2)}`
-                            productObj["assets"].push(obj)
-                            productObj["total"] += token.balanceUSD;
-                            // console.log(`${token.symbol}(${token.network}): $${token.balanceUSD}`)
-                            // console.log(token.balanceUSD)
-                            balance += token.balanceUSD;
+                            if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
+                                let obj = {}
+                                obj["name"] = `${token.symbol}(${token.network})`;
+                                obj["balance"] = `$${token.balanceUSD.toFixed(2)}`
+                                productObj["assets"].push(obj)
+                                productObj["total"] += token.balanceUSD;
+                                balance += token.balanceUSD;
+                            }
                         })  
                     })
                 });
@@ -104,7 +104,6 @@ app.get('/', (req, res) => {
                     console.log('Total Balance: $' + balance);
                     res.render('index', { balances: balances, totalBalance: balance.toFixed(2) });
                 }, 3000);
-                
             }
           });
     })
