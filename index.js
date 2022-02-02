@@ -39,6 +39,14 @@ let addresses = [
         "address": "0x43ac3521af61d774d5f4db6f24d69ec9499f1057"
     },
     {
+        "name": "Arb Gnosis 2",
+        "address": "0x3a308ae2912450c96fe8a76a016fe0ba17a8184d"
+    },
+    {
+        "name": "Avax Gnosis",
+        "address": "0xb435a68d8ebb99b2e9c8ce98e011619d69eb55ee"
+    },
+    {
         "name": "Rari Wallet",
         "address": "0xea9f4810f6e82231c5b93d455bb7f45d461098d6"
     }
@@ -56,7 +64,7 @@ app.get('/', (req, res) => {
         productObj["name"] = address.name;
         productObj["assets"] = [];
         productObj["total"] = 0;
-        var es = new EventSource(`https://api.zapper.fi/v1/balances?addresses%5B0%5D=${address.address}&nonNilOnly=true&networks%5B0%5D=ethereum&networks%5B1%5D=polygon&networks%5B2%5D=optimism&networks%5B3%5D=xdai&networks%5B4%5D=binance-smart-chain&networks%5B5%5D=fantom&networks%5B6%5D=avalanche&networks%5B7%5D=arbitrum&networks%5B8%5D=celo&networks%5B9%5D=harmony&networks%5B10%5D=moonriver&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa`);        
+        var es = new EventSource(`https://api.zapper.fi/v1/balances?addresses%5B0%5D=${address.address}&nonNilOnly=true&networks%5B0%5D=ethereum&networks%5B1%5D=polygon&networks%5B2%5D=optimism&networks%5B3%5D=xdai&networks%5B4%5D=binance-smart-chain&networks%5B5%5D=fantom&networks%5B6%5D=avalanche&networks%5B7%5D=arbitrum&networks%5B8%5D=celo&networks%5B9%5D=harmony&networks%5B10%5D=moonriver&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa`);
         es.on('start', function(e) {
             // status event
             console.log("Event Started");
@@ -75,6 +83,8 @@ app.get('/', (req, res) => {
                                 obj["balance"] = `$${token.balanceUSD.toFixed(2)}`
                                 productObj["assets"].push(obj)
                                 productObj["total"] += token.balanceUSD;
+                                // console.log(`${token.symbol}(${token.network}): $${token.balanceUSD}`)
+                                // console.log(token.balanceUSD)
                                 balance += token.balanceUSD;
                             }
                         })  
@@ -103,7 +113,8 @@ app.get('/', (req, res) => {
                     console.log(balances);
                     console.log('Total Balance: $' + balance);
                     res.render('index', { balances: balances, totalBalance: balance.toFixed(2) });
-                }, 3000);
+                }, 5000);
+                
             }
           });
     })
