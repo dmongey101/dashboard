@@ -71,25 +71,26 @@ app.get('/', (req, res) => {
           }).on('balance', function(e) {
             // result event
             let data2 = JSON.parse(e.data);
-            
-            if (data2.balances[address.address].products.length > 0) {
-                data2.balances[address.address].products.forEach(product => {
-                    // console.log(product.label)
-                    product.assets.forEach(asset => {
-                        asset.tokens.forEach(token => {
-                            if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
-                                let obj = {}
-                                obj["name"] = `${token.symbol}(${token.network})`;
-                                obj["balance"] = `$${token.balanceUSD.toFixed(2)}`
-                                productObj["assets"].push(obj)
-                                productObj["total"] += token.balanceUSD;
-                                // console.log(`${token.symbol}(${token.network}): $${token.balanceUSD}`)
-                                // console.log(token.balanceUSD)
-                                balance += token.balanceUSD;
-                            }
-                        })  
-                    })
-                });
+            if (data2.balances[address.address] != undefined) {
+                if (data2.balances[address.address].products.length > 0) {
+                    data2.balances[address.address].products.forEach(product => {
+                        // console.log(product.label)
+                        product.assets.forEach(asset => {
+                            asset.tokens.forEach(token => {
+                                if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
+                                    let obj = {}
+                                    obj["name"] = `${token.symbol}(${token.network})`;
+                                    obj["balance"] = `$${token.balanceUSD.toFixed(2)}`
+                                    productObj["assets"].push(obj)
+                                    productObj["total"] += token.balanceUSD;
+                                    // console.log(`${token.symbol}(${token.network}): $${token.balanceUSD}`)
+                                    // console.log(token.balanceUSD)
+                                    balance += token.balanceUSD;
+                                }
+                            })  
+                        })
+                    });
+                }
             }
           }).on('end', function() {
             console.log('End');

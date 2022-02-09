@@ -5,7 +5,7 @@ var uuid = require('uuid');
 
 dotenv.config();
 
-const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/eu-west-1-bundle.cer`;
+const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/eu-west-1-bundle.cer&sslmode=require`;
 
 let addresses = [
     {
@@ -69,37 +69,38 @@ const main = () => {
           }).on('balance', function(e) {
             // result event
             let data2 = JSON.parse(e.data);
-            
-            if (data2.balances[address.address].products.length > 0) {
-                data2.balances[address.address].products.forEach(product => {
-                    // console.log(product.label)
-                    product.assets.forEach(asset => {
-                        asset.tokens.forEach(token => {
-                            let obj = {};
-                            if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
-                                // let obj = {}
-                                if (token.balanceUSD > 5 || token.balanceUSD < 0) {
-                                    const assetItm = balances.filter(b => b.token == token.symbol && b.chain == token.network);
-                                    if (assetItm.length > 0 ) {
-                                        assetItm[0]['balance'] += token.balanceUSD;
-                                    } else {
-                                        obj['token'] = token.symbol;
-                                        obj['chain'] = token.network;
-                                        obj['type'] = token.type;
-                                        obj['balanceUSD'] = token.balanceUSD;
-                                        obj['balance'] = token.balance;
-                                        if (token.type == 'nft') {
-                                            obj['price'] = token.collection.floorPrice
+            if (data2.balances[address.address] != undefined) {
+                if (data2.balances[address.address].products.length > 0) {
+                    data2.balances[address.address].products.forEach(product => {
+                        // console.log(product.label)
+                        product.assets.forEach(asset => {
+                            asset.tokens.forEach(token => {
+                                let obj = {};
+                                if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
+                                    // let obj = {}
+                                    if (token.balanceUSD > 5 || token.balanceUSD < 0) {
+                                        const assetItm = balances.filter(b => b.token == token.symbol && b.chain == token.network);
+                                        if (assetItm.length > 0 ) {
+                                            assetItm[0]['balance'] += token.balanceUSD;
                                         } else {
-                                            obj['price'] = token.price;
-                                        }                                        
-                                        balances.push(obj);
+                                            obj['token'] = token.symbol;
+                                            obj['chain'] = token.network;
+                                            obj['type'] = token.type;
+                                            obj['balanceUSD'] = token.balanceUSD;
+                                            obj['balance'] = token.balance;
+                                            if (token.type == 'nft') {
+                                                obj['price'] = token.collection.floorPrice
+                                            } else {
+                                                obj['price'] = token.price;
+                                            }                                        
+                                            balances.push(obj);
+                                        }
                                     }
                                 }
-                            }
-                        })  
-                    })
-                });
+                            })  
+                        })
+                    });
+                }
             }
           }).on('end', function() {
             console.log('End');
