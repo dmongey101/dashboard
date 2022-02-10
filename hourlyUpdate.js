@@ -5,7 +5,7 @@ var uuid = require('uuid');
 
 dotenv.config();
 
-const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/global-bundle.cer&sslmode=require`;
+const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/global-bundle.cer`;
 
 let addresses = [
     {
