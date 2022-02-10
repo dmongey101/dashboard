@@ -5,7 +5,7 @@ var uuid = require('uuid');
 
 dotenv.config();
 
-const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/amazon-rds-ca-cert.pem`;
+const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/amazon-rds-ca-cert.pem&sslmode=require`;
 
 let addresses = [
     {
