@@ -5,7 +5,7 @@ var uuid = require('uuid');
 
 dotenv.config();
 
-const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/global-bundle.cer`;
+const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/amazon-rds-ca-cert.pem`;
 
 let addresses = [
     {
@@ -108,6 +108,7 @@ const main = () => {
             if (address.address == "0x9faa04cd0a0b0624560315c9630f36d9192c67b5") {
                 setTimeout(function(){
                     const client = new Client(connUrl)
+                    console.log(client);
                     client.connect();
                     let lastBalance = balances[balances.length - 1];
                     balances.forEach(balance => {
