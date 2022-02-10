@@ -5,7 +5,7 @@ var uuid = require('uuid');
 
 dotenv.config();
 
-const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/eu-west-1-bundle.cer&&sslmode=require`;
+const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/amazon-rds-ca-cert.pem`;
 
 let addresses = [
     {
@@ -75,7 +75,7 @@ const main = () => {
                         product.assets.forEach(asset => {
                             asset.tokens.forEach(token => {
                                 let obj = {};
-                                console.log(token);
+                                
                                 if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
                                     // let obj = {}
                                     if (token.balanceUSD > 5 || token.balanceUSD < 0) {
