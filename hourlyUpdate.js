@@ -108,7 +108,12 @@ const main = () => {
             if (address.address == "0x9faa04cd0a0b0624560315c9630f36d9192c67b5") {
                 setTimeout(function(){
                     const client = new Client(connUrl)
-                    client.connect();
+                    try {
+                        client.connect();
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    
                     let lastBalance = balances[balances.length - 1];
                     balances.forEach(balance => {
                         const selectQuery = {
