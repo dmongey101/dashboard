@@ -84,7 +84,7 @@ const main = () => {
                                             obj['token'] = token.symbol;
                                             obj['chain'] = token.network;
                                             obj['type'] = token.type;
-                                            obj['balance'] = token.balanceUSD.toFixed(2);
+                                            obj['balance'] = token.balanceUSD;
                                             balances.push(obj);
                                         }
                                     }

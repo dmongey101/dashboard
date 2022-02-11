@@ -128,12 +128,12 @@ const main = () => {
                                     if (balance.type == 'nft') {
                                         insertQuery = {
                                             text: 'INSERT INTO nft_balances(asset_id, balanceusd, tick, balance, floor_price) VALUES ($1, $2, $3, $4, $5)',
-                                            values: [res.rows[0].id, balance.balanceUSD.toFixed(2), now, balance.balance, balance.price.toFixed(2)],
+                                            values: [res.rows[0].id, balance.balanceUSD, now, balance.balance, balance.price],
                                         }
                                     } else {
                                         insertQuery = {
                                             text: 'INSERT INTO token_balances(asset_id, balanceusd, tick, balance, price) VALUES ($1, $2, $3, $4, $5)',
-                                            values: [res.rows[0].id, balance.balanceUSD.toFixed(2), now, balance.balance, balance.price.toFixed(2)],
+                                            values: [res.rows[0].id, balance.balanceUSD, now, balance.balance, balance.price],
                                         }
                                     }
                                     client.query(insertQuery, (err, res) => {
