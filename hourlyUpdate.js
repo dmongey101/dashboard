@@ -5,8 +5,6 @@ var uuid = require('uuid');
 
 dotenv.config();
 
-const connUrl = `postgres://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.PORT}/${process.env.DATABASE}?sslca=config/amazon-rds-ca-cert.pem`;
-
 let addresses = [
     {
         "name": "Tarzan",
@@ -107,7 +105,7 @@ const main = () => {
             es.close();
             if (address.address == "0x9faa04cd0a0b0624560315c9630f36d9192c67b5") {
                 setTimeout(function(){
-                    const client = new Client(connUrl)
+                    const client = new Client(process.env.CONNSTRING)
                     try {
                         client.connect();
                     } catch (err) {
