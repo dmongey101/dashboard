@@ -66,7 +66,7 @@ const main = () => {
           }).on('balance', function(e) {
             // result event
             let data2 = JSON.parse(e.data);
-            if (data2.balances[address.address] != undefined) {
+            if (typeof(data2.balances[address.address]) != undefined) {
                 if (data2.balances[address.address].products.length > 0) {
                     data2.balances[address.address].products.forEach(product => {
                         // console.log(product.label)
