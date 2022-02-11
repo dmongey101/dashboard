@@ -35,7 +35,19 @@ app.get('/', (req, res) => {
                 query_res.rows.forEach(asset => {
                     total += asset.current_balance
                 })
-                res.render('index', {balances: query_res.rows, totalBalance: total})
+                query_res.rows.sort((a, b) => {
+                    let fa = a.name.toLowerCase(),
+                        fb = b.name.toLowerCase();
+                
+                    if (fa < fb) {
+                        return -1;
+                    }
+                    if (fa > fb) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                res.render('index', {balances: query_res.rows, totalBalance: total.toFixed(2)})
             }
             client.end()
         }

@@ -13,7 +13,7 @@
             <div class="md:flex md:items-center md:justify-between">
                 <div class="flex-1 min-w-0">
                 <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                    Treasury Balance - <%- totalBalance %>
+                    Treasury Balance - $<%- totalBalance %>
                 </h2>
                 </div>
             </div>
@@ -25,10 +25,10 @@
                     <% balances.forEach(asset => { %>
                   <div class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
                     <dt class="text-sm font-medium text-gray-500 truncate">
-                        <%- asset.name %> - <%- asset.chain %>
+                        <%- asset.name %> - <%- asset.chain %> (<%- asset.type %>)
                     </dt>
                     <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                        <%- asset.current_balance %>
+                        $<%- asset.current_balance.toFixed(2) %>
                     </dd>
                   </div>
                   <% }); %>
