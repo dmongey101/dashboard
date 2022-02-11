@@ -84,7 +84,7 @@ const main = () => {
                                             obj['token'] = token.symbol;
                                             obj['chain'] = token.network;
                                             obj['type'] = token.type;
-                                            obj['balance'] = token.balanceUSD;
+                                            obj['balance'] = token.balanceUSD.toFixed(2);
                                             balances.push(obj);
                                         }
                                     }
@@ -114,7 +114,7 @@ const main = () => {
                                 if (res.rowCount < 1) {
                                     const insertQuery = {
                                         text: 'INSERT INTO assets(id, name, chain, type, current_balance) VALUES ($1, $2, $3, $4, $5)',
-                                        values: [uuid.v4(), balance.token, balance.chain, balance.type, balance.balance.toFixed(2)],
+                                        values: [uuid.v4(), balance.token, balance.chain, balance.type, balance.balance],
                                     }
                                     client.query(insertQuery, (err, res) => {
                                         if (err) {
