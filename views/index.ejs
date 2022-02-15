@@ -16,7 +16,7 @@
                         <%- asset.name %> - <%- asset.chain %> (<%- asset.type %>)
                     </dt>
                     <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                        $<%- asset.current_balance.toFixed(2) %>
+                        $<%- asset.current_balance.toFixed(2) %> (<%- asset.change.toFixed(2) %>)
                     </dd>
                     </div>
                     <% }); %>

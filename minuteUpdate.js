@@ -66,7 +66,7 @@ const main = () => {
           }).on('balance', function(e) {
             // result event
             let data2 = JSON.parse(e.data);
-            if (typeof(data2.balances[address.address]) !== 'undefined') {
+            if (data2.balances[address.address] !== undefined || data2.balances[address.address] !== null || typeof(data2.balances[address.address]) != "undefined") {
                 if (data2.balances[address.address].products.length > 0) {
                     data2.balances[address.address].products.forEach(product => {
                         // console.log(product.label)
@@ -149,7 +149,7 @@ const main = () => {
                     })
                     // console.log('Total Balance: $' + balance);
                     // res.render('index', { balances: balances, totalBalance: balance.toFixed(2) });
-                }, 8000);
+                }, 10000);
                 
             }
           });

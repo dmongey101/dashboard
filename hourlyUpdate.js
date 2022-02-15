@@ -54,6 +54,7 @@ let addresses = [
 
 const main = () => {
     const now = new Date(Date.now()).toISOString();
+    console.log(now)
     var balances = [];
     addresses.forEach(address => {
         // let productObj = {};
@@ -67,7 +68,7 @@ const main = () => {
           }).on('balance', function(e) {
             // result event
             let data2 = JSON.parse(e.data);
-            if (typeof(data2.balances[address.address]) !== 'undefined') {
+            if (data2.balances[address.address] !== undefined || data2.balances[address.address] !== null || typeof(data2.balances[address.address]) != "undefined") {
                 if (data2.balances[address.address].products.length > 0) {
                     data2.balances[address.address].products.forEach(product => {
                         // console.log(product.label)
@@ -79,7 +80,7 @@ const main = () => {
                                     if (token.balanceUSD > 5 || token.balanceUSD < 0) {
                                         const assetItm = balances.filter(b => b.token == token.symbol && b.chain == token.network);
                                         if (assetItm.length > 0 ) {
-                                            assetItm[0]['balance'] += token.balanceUSD;
+                                            assetItm[0]['balanceUSD'] += token.balanceUSD;
                                         } else {
                                             obj['token'] = token.symbol;
                                             obj['chain'] = token.network;
@@ -151,7 +152,7 @@ const main = () => {
                             }
                         })
                     })
-                }, 8000);
+                }, 10000);
                 
             }
           });
