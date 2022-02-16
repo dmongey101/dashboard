@@ -16,7 +16,14 @@
                         <%- asset.name %> - <%- asset.chain %> (<%- asset.type %>)
                     </dt>
                     <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                        $<%- asset.current_balance.toFixed(2) %> (<%- asset.change.toFixed(2) %>)
+                        $<%- asset.current_balance.toFixed(2) %> 
+                        <% if (asset.change > 0) { %> 
+                            <p class="text-green-500">(<%- asset.change.toFixed(2) %>%)</p>
+                        <% } else if (asset.change < 0) { %>
+                            <p class="text-red-500">(<%- asset.change.toFixed(2) %>%)</p>
+                        <%} else { %>
+                            <p>(<%- asset.change.toFixed(2) %>%)</p>
+                        <%}%>
                     </dd>
                     </div>
                     <% }); %>
