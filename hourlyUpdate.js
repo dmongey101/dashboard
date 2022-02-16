@@ -52,9 +52,13 @@ let addresses = [
     }
 ]
 
+const connectionString = process.env.CONNSTRING
+
 const main = () => {
+    const pool = new Pool({
+        connectionString,
+    })
     const now = new Date(Date.now()).toISOString();
-    console.log(now)
     var balances = [];
     addresses.forEach(address => {
         // let productObj = {};
@@ -101,58 +105,37 @@ const main = () => {
                     });
                 }
             }
-          }).on('end', function() {
+          }).on('end', async () => {
             console.log('End');
             es.close();
             if (address.address == "0x9faa04cd0a0b0624560315c9630f36d9192c67b5") {
-                setTimeout(function(){
-                    const client = new Client(process.env.CONNSTRING)
-                    try {
-                        client.connect();
-                    } catch (err) {
-                        console.log(err);
-                    }
-                    
-                    let lastBalance = balances[balances.length - 1];
-                    balances.forEach(balance => {
+                setTimeout(async () => {
+                    for await (let balance of balances) {
                         const selectQuery = {
                             text: 'SELECT * FROM assets WHERE name = $1 AND chain = $2',
                             values: [balance.token, balance.chain],
                         }
-                        client.query(selectQuery, (err, res) => {
-                            if (err) {
-                                console.log(err.stack)
+                        const res1 = await pool.query(selectQuery)
+                        if (res1.rowCount > 0 && res1.rows[0] != undefined) {
+                            let insertQuery;
+                            // insert into nft table if nft
+                            if (balance.type == 'nft') {
+                                insertQuery = {
+                                    text: 'INSERT INTO nft_balances(asset_id, balanceusd, tick, balance, floor_price) VALUES ($1, $2, $3, $4, $5)',
+                                    values: [res1.rows[0].id, balance.balanceUSD, now, balance.balance, balance.price],
+                                }
                             } else {
-                                if (res.rowCount > 0 && res.rows[0] != undefined) {
-                                    let insertQuery;
-                                    // insert into nft table if nft
-                                    if (balance.type == 'nft') {
-                                        insertQuery = {
-                                            text: 'INSERT INTO nft_balances(asset_id, balanceusd, tick, balance, floor_price) VALUES ($1, $2, $3, $4, $5)',
-                                            values: [res.rows[0].id, balance.balanceUSD, now, balance.balance, balance.price],
-                                        }
-                                    } else {
-                                        insertQuery = {
-                                            text: 'INSERT INTO token_balances(asset_id, balanceusd, tick, balance, price) VALUES ($1, $2, $3, $4, $5)',
-                                            values: [res.rows[0].id, balance.balanceUSD, now, balance.balance, balance.price],
-                                        }
-                                    }
-                                    client.query(insertQuery, (err, res) => {
-                                        if (err) {
-                                            console.log(err.stack)
-                                        } else {
-                                            console.log('Added token')
-                                            if (balance.token == lastBalance.token && balance.chain == lastBalance.chain) {
-                                                client.end()
-                                                console.log('Closing Connection')
-                                            }
-                                        }
-                                    })
+                                insertQuery = {
+                                    text: 'INSERT INTO token_balances(asset_id, balanceusd, tick, balance, price) VALUES ($1, $2, $3, $4, $5)',
+                                    values: [res1.rows[0].id, balance.balanceUSD, now, balance.balance, balance.price],
                                 }
                             }
-                        })
-                    })
-                }, 10000);
+                            await pool.query(insertQuery)
+                            console.log('Added token')
+                        }
+                    }
+                    await pool.end()
+                }, 15000);
                 
             }
           });

@@ -73,7 +73,7 @@ app.get('/stables', async (req, res) => {
         connectionString,
     })
     const selectQuery = {
-        text: `SELECT * FROM assets where type = 'stablecoin'`,
+        text: `SELECT * FROM assets where type = 'stablecoin' AND (current_balance > 5 OR current_balance < 0)`,
         values: [],
     }
 
@@ -123,7 +123,7 @@ app.get('/nfts', async (req, res) => {
         connectionString,
     })
     const selectQuery = {
-        text: `SELECT * FROM assets where type = 'nft'`,
+        text: `SELECT * FROM assets where type = 'nft' AND (current_balance > 5 OR current_balance < 0)`,
         values: [],
     }
 

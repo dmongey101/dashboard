@@ -52,7 +52,12 @@ let addresses = [
     }
 ]
 
+const connectionString = process.env.CONNSTRING
+
 const main = () => {
+    const pool = new Pool({
+        connectionString,
+    })
     var balances = [];
     addresses.forEach(address => {
         // let productObj = {};
@@ -73,83 +78,71 @@ const main = () => {
                         product.assets.forEach(asset => {
                             asset.tokens.forEach(token => {
                                 let obj = {};
-                                
+                                if (asset.symbol == 'UST') {
+                                    console.log('------------------------')
+                                    console.log(address.address)
+                                }
                                 if (asset.appId != "superfluid" && (address.address != "0x3d7d429a7962d5d082a10558592bb7d29eb9211b" || address.address != "0x418ea8e4ab433ae27390874a467a625f65f131b8")) {
-                                    // let obj = {}
-                                    if (token.balanceUSD > 5 || token.balanceUSD < 0) {
-                                        const assetItm = balances.filter(b => b.token == token.symbol && b.chain == token.network);
-                                        if (assetItm.length > 0 ) {
-                                            assetItm[0]['balance'] += token.balanceUSD;
-                                        } else {
-                                            obj['token'] = token.symbol;
-                                            obj['chain'] = token.network;
-                                            obj['type'] = token.type;
-                                            obj['balance'] = token.balanceUSD;
-                                            balances.push(obj);
-                                        }
+                                    const assetItm = balances.filter(b => b.token == token.symbol && b.chain == token.network);
+                                    if (assetItm.length > 0 ) {
+                                        assetItm[0]['balance'] += token.balanceUSD;
+                                    } else {
+                                        obj['token'] = token.symbol;
+                                        obj['chain'] = token.network;
+                                        obj['type'] = token.type;
+                                        obj['balance'] = token.balanceUSD;
+                                        balances.push(obj);
                                     }
+                                    
                                 }
                             })  
                         })
                     });
                 }
             }
-          }).on('end', function() {
+          }).on('end', async () => {
+
             console.log('End');
             es.close();
+
+            let nullCheckString = '('
             if (address.address == "0x9faa04cd0a0b0624560315c9630f36d9192c67b5") {
-                setTimeout(function(){
-                    const client = new Client(process.env.CONNSTRING)
-                    client.connect();
-                    let lastBalance = balances[balances.length - 1];
-                    balances.forEach(balance => {
+                setTimeout(async () => {
+                    for await (let balance of balances) {
+                        nullCheckString += `'${balance.token}'` + ','
                         const selectQuery = {
                             text: 'SELECT * FROM assets WHERE name = $1 AND chain = $2',
                             values: [balance.token, balance.chain],
                         }
-                        client.query(selectQuery, (err, res) => {
-                            if (err) {
-                                console.log(err.stack)
-                            } else {
-                                if (res.rowCount < 1) {
-                                    const insertQuery = {
-                                        text: 'INSERT INTO assets(id, name, chain, type, current_balance) VALUES ($1, $2, $3, $4, $5)',
-                                        values: [uuid.v4(), balance.token, balance.chain, balance.type, balance.balance],
-                                    }
-                                    client.query(insertQuery, (err, res) => {
-                                        if (err) {
-                                            console.log(err.stack)
-                                        } else {
-                                            console.log('Added token')
-                                            if (balance.token == lastBalance.token && balance.chain == lastBalance.chain) {
-                                                client.end()
-                                                console.log('Closing Connection')
-                                            }
-                                        }
-                                    })
-                                } else {
-                                    const updateQuery = {
-                                        text: 'UPDATE assets SET current_balance = $1 WHERE name = $2 AND chain = $3',
-                                        values: [balance.balance, balance.token, balance.chain],
-                                    }
-                                    client.query(updateQuery, (err, res) => {
-                                        if (err) {
-                                            console.log(err.stack)
-                                        } else {
-                                            console.log('Updated balance')
-                                            if (balance.token == lastBalance.token && balance.chain == lastBalance.chain) {
-                                                console.log('Closing Connection')
-                                                client.end()
-                                            }
-                                        }
-                                    })
-                                }
+                        const res1 = await pool.query(selectQuery)
+                        if (res1.rowCount < 1) {
+                            const insertQuery = {
+                                text: 'INSERT INTO assets(id, name, chain, type, current_balance) VALUES ($1, $2, $3, $4, $5)',
+                                values: [uuid.v4(), balance.token, balance.chain, balance.type, balance.balance],
                             }
-                        })
-                    })
-                    // console.log('Total Balance: $' + balance);
-                    // res.render('index', { balances: balances, totalBalance: balance.toFixed(2) });
-                }, 10000);
+                            await pool.query(insertQuery)
+                            console.log('Added token')
+                        } else {
+                            const updateQuery = {
+                                text: 'UPDATE assets SET current_balance = $1 WHERE name = $2 AND chain = $3',
+                                values: [balance.balance, balance.token, balance.chain],
+                            }
+                            await pool.query(updateQuery)
+                            console.log('Updated balance')
+                        }
+                    }
+                    nullCheckString = nullCheckString.slice(0, -1)
+                    nullCheckString += ')'
+                    
+                    const setZeroQuery = {
+                        text: `UPDATE assets SET current_balance = 0 WHERE name not in ${nullCheckString}`,
+                        values: [],
+                    }
+                    
+                    await pool.query(setZeroQuery)
+
+                    await pool.end()
+                }, 15000);
                 
             }
           });
