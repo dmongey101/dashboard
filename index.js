@@ -25,7 +25,7 @@ app.get('/', async (req, res) => {
     const yesterday = new Date(Date.now() - (24*3600000)).toISOString();
 
     const selectQuery = {
-        text: 'SELECT * FROM assets WHERE current_balance > 5 OR current_balance < 0',
+        text: 'SELECT * FROM tokens WHERE current_balance > 5 OR current_balance < 0',
         values: [],
     }
 
@@ -38,6 +38,7 @@ app.get('/', async (req, res) => {
             obj["type"] = asset.type
             obj["chain"] = asset.chain
             obj["current_balance"] = asset.current_balance
+            obj["portfolio_allocation"] = asset.portfolio_allocation
             obj["change"] = 0
             const selectAssetQuery = {
                 text: 'SELECT * FROM token_balances WHERE asset_id = $1 AND tick < $2 ORDER BY tick DESC LIMIT 1;',
@@ -64,7 +65,7 @@ app.get('/', async (req, res) => {
         });
     }
     await pool.end()
-    res.render('index', {page: 'Treasury', balances: balances, totalBalance: total.toFixed(2)})
+    res.render('index', {page: 'Treasury', balances: balances, totalBalance: parseFloat(total.toFixed(2))})
 })
 
 app.get('/stables', async (req, res) => {
@@ -73,7 +74,7 @@ app.get('/stables', async (req, res) => {
         connectionString,
     })
     const selectQuery = {
-        text: `SELECT * FROM assets where type = 'stablecoin' AND (current_balance > 5 OR current_balance < 0)`,
+        text: `SELECT * FROM tokens where type = 'stablecoin' AND (current_balance > 5 OR current_balance < 0)`,
         values: [],
     }
 
@@ -89,6 +90,7 @@ app.get('/stables', async (req, res) => {
             obj["type"] = asset.type
             obj["chain"] = asset.chain
             obj["current_balance"] = asset.current_balance
+            obj["portfolio_allocation"] = asset.portfolio_allocation
             obj["change"] = 0
             const selectAssetQuery = {
                 text: 'SELECT * FROM token_balances WHERE asset_id = $1 AND tick < $2 ORDER BY tick DESC LIMIT 1;',
@@ -113,7 +115,7 @@ app.get('/stables', async (req, res) => {
             return 0;
         });
         await pool.end()
-        res.render('index', {page: 'Stables', balances: balances, totalBalance: total.toFixed(2)})
+        res.render('index', {page: 'Stables', balances: balances, totalBalance: parseFloat(total.toFixed(2))})
     }
 })
 
@@ -123,7 +125,7 @@ app.get('/nfts', async (req, res) => {
         connectionString,
     })
     const selectQuery = {
-        text: `SELECT * FROM assets where type = 'nft' AND (current_balance > 5 OR current_balance < 0)`,
+        text: `SELECT * FROM nfts WHERE (current_balance > 5 OR current_balance < 0)`,
         values: [],
     }
 
@@ -139,9 +141,10 @@ app.get('/nfts', async (req, res) => {
             obj["type"] = asset.type
             obj["chain"] = asset.chain
             obj["current_balance"] = asset.current_balance
+            obj["portfolio_allocation"] = asset.portfolio_allocation
             obj["change"] = 0
             const selectAssetQuery = {
-                text: 'SELECT * FROM nft_balances WHERE asset_id = $1 AND tick < $2 ORDER BY tick DESC LIMIT 1;',
+                text: 'SELECT * FROM nft_balances WHERE nft_id = $1 AND tick < $2 ORDER BY tick DESC LIMIT 1;',
                 values: [asset.id, yesterday],
             }
             const res2 = await pool.query(selectAssetQuery);
@@ -163,7 +166,7 @@ app.get('/nfts', async (req, res) => {
             return 0;
         });
         await pool.end()
-        res.render('index', {page: 'NFTs', balances: balances, totalBalance: total.toFixed(2)})
+        res.render('index', {page: 'NFTs', balances: balances, totalBalance: parseFloat(total.toFixed(2))})
     }
 })
 
@@ -173,7 +176,7 @@ app.get('/debt', async (req, res) => {
         connectionString,
     })
     const selectQuery = {
-        text: `SELECT * FROM assets where current_balance < 0`,
+        text: `SELECT * FROM tokens where current_balance < 0`,
         values: [],
     }
 
@@ -213,7 +216,7 @@ app.get('/debt', async (req, res) => {
             return 0;
         });
         await pool.end()
-        res.render('index', {page: 'Debt', balances: balances, totalBalance: total.toFixed(2)})
+        res.render('index', {page: 'Debt', balances: balances, totalBalance: parseFloat(total.toFixed(2))})
     }
 })
 

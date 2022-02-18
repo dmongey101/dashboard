@@ -111,8 +111,9 @@ const main = () => {
             if (address.address == "0x9faa04cd0a0b0624560315c9630f36d9192c67b5") {
                 setTimeout(async () => {
                     for await (let balance of balances) {
+                        let tokenType = balance.type == 'nft' ? 'nfts' : 'tokens'
                         const selectQuery = {
-                            text: 'SELECT * FROM assets WHERE name = $1 AND chain = $2',
+                            text: `SELECT * FROM ${tokenType} WHERE name = $1 AND chain = $2`,
                             values: [balance.token, balance.chain],
                         }
                         const res1 = await pool.query(selectQuery)
@@ -121,7 +122,7 @@ const main = () => {
                             // insert into nft table if nft
                             if (balance.type == 'nft') {
                                 insertQuery = {
-                                    text: 'INSERT INTO nft_balances(asset_id, balanceusd, tick, balance, floor_price) VALUES ($1, $2, $3, $4, $5)',
+                                    text: 'INSERT INTO nft_balances(nft_id, balanceusd, tick, balance, floor_price) VALUES ($1, $2, $3, $4, $5)',
                                     values: [res1.rows[0].id, balance.balanceUSD, now, balance.balance, balance.price],
                                 }
                             } else {

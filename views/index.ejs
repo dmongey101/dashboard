@@ -2,7 +2,7 @@
     <div class="py-10">
         <header>
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold leading-tight text-gray-900"><%- page %> Balance - $<%- totalBalance %></h1>
+            <h1 class="text-3xl font-bold leading-tight text-gray-900"><%- page %> Balance - $<%- totalBalance.toLocaleString("en-US") %></h1>
             </div>
         </header>
         <main>
@@ -16,7 +16,7 @@
                         <%- asset.name %> - <%- asset.chain %> (<%- asset.type %>)
                     </dt>
                     <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                        $<%- asset.current_balance.toFixed(2) %> 
+                        $<%- parseFloat(asset.current_balance.toFixed(2)).toLocaleString("en-US") %>
                         <% if (asset.change > 0) { %> 
                             <p class="text-green-500">(<%- asset.change.toFixed(2) %>%)</p>
                         <% } else if (asset.change < 0) { %>
@@ -24,6 +24,9 @@
                         <%} else { %>
                             <p>(<%- asset.change.toFixed(2) %>%)</p>
                         <%}%>
+                        <% if (asset.portfolio_allocation != null) { %>
+                            <p class="text-sm">Portfolio Allocation: <%- asset.portfolio_allocation.toFixed(3) %>%</p>
+                        <% } %>
                     </dd>
                     </div>
                     <% }); %>
