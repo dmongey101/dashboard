@@ -2,7 +2,9 @@ var EventSource = require('eventsource');
 const { Pool, Client } = require('pg');
 const dotenv = require('dotenv');
 var uuid = require('uuid');
-const e = require('express');
+const ethers = require('ethers')
+const LPTokenABI = require('./abis/LPToken.json')
+const ProtofiMasterChefABI = require('./abis/ProtofiMasterChef.json')
 
 dotenv.config();
 
@@ -54,6 +56,10 @@ let addresses = [
 ]
 
 const connectionString = process.env.CONNSTRING
+
+const provider = new ethers.providers.JsonRpcProvider('https://rpc.ftm.tools/')
+let wallet = ethers.Wallet.fromMnemonic(process.env.MNEMONIC);
+wallet = wallet.connect(provider);
 
 const main = () => {
     const pool = new Pool({
@@ -189,17 +195,31 @@ const test = async () => {
     const pool = new Pool({
         connectionString,
     })
-    const selectQuery = {
-        text: `SELECT * FROM nfts WHERE current_balance > 0`,
-       values: [],
-   }
-   const res1 = await pool.query(selectQuery)
-   let balance = 0
-   res1.rows.forEach(asset => {
-        balance += asset.portfolio_allocation
-   })
-   console.log(balance)
-   pool.end()
+
+    const protoLpContract = new ethers.Contract('0x427EFB4C731b38530C29Ce475B249A15f028cc8A', LPTokenABI.abi, wallet)
+    const protofiMasterChefContract = new ethers.Contract("0xa71f52aee8311c22b6329EF7715A5B8aBF1c6588", ProtofiMasterChefABI.abi, provider)
+
+    const reserves = await protoLpContract.getReserves()
+    let marketPrice = reserves[0] / reserves[1] * 1000000000000
+    let balance = await protofiMasterChefContract.userInfo(3, '0x307B92039FbF218D79FF9BFb0E55a9087cc407A2')
+    balance = ethers.utils.formatEther(balance.amount)
+    console.log(marketPrice)
+    console.log(balance)
+    const protoBalanceUSD = marketPrice * balance
+    console.log(protoBalanceUSD)
+
+
+//     const selectQuery = {
+//         text: `SELECT * FROM nfts WHERE current_balance > 0`,
+//        values: [],
+//    }
+//    const res1 = await pool.query(selectQuery)
+//    let balance = 0
+//    res1.rows.forEach(asset => {
+//         balance += asset.portfolio_allocation
+//    })
+//    console.log(balance)
+//    pool.end()
 }
 
 main();

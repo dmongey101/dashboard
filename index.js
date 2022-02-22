@@ -6,7 +6,6 @@ const server = require('http').Server(app)
 const path = require('path');
 const { Pool, Client } = require('pg');
 const dotenv = require('dotenv');
-const { assert } = require('console');
 
 dotenv.config();
 
