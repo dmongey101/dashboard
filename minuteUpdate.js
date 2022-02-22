@@ -57,9 +57,9 @@ let addresses = [
 
 const connectionString = process.env.CONNSTRING
 
-const provider = new ethers.providers.JsonRpcProvider('https://rpc.ftm.tools/')
-let wallet = ethers.Wallet.fromMnemonic(process.env.MNEMONIC);
-wallet = wallet.connect(provider);
+// const provider = new ethers.providers.JsonRpcProvider('https://rpc.ftm.tools/')
+// let wallet = ethers.Wallet.fromMnemonic(process.env.MNEMONIC);
+// wallet = wallet.connect(provider);
 
 const main = () => {
     const pool = new Pool({
