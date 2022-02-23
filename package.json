@@ -4,7 +4,8 @@
   "description": "Dashboard to show DAOs total funds",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind": "npx tailwindcss -o ./public/styles/style.css --watch"
   },
   "author": "Tarzan",
   "license": "ISC",

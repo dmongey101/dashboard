@@ -7,7 +7,7 @@ const MoneyPotABI = require('./abis/MoneyPot.json')
 dotenv.config()
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc.ftm.tools/')
-let wallet = ethers.Wallet.fromMnemonic(process.env.PROTO_MNEMONIC);
+let wallet = ethers.Wallet.fromMnemonic(process.env.MNEMONIC);
 wallet = wallet.connect(provider);
 
 const main = async () => {
@@ -20,7 +20,7 @@ const main = async () => {
         await tx.wait()
         console.log(tx)
         sleep(10)
-        let elctBalance = await ElctronTokenContract.balanceOf('0x74FA51504961725f560765B1D7BDA5928a7F1BCe')
+        let elctBalance = await ElctronTokenContract.balanceOf('0x307B92039FbF218D79FF9BFb0E55a9087cc407A2')
         const MoneyPotContract = new ethers.Contract('0x180b3622bcc123e900e5eb603066755418d0b4f5', MoneyPotABI.abi, provider)
         const signer2 = MoneyPotContract.connect(wallet)
         gasPrice = await getGasPrice(provider)

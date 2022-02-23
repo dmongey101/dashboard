@@ -219,4 +219,25 @@ app.get('/debt', async (req, res) => {
     }
 })
 
+app.get('/add_asset', async (req, res) => {
+    const pool = new Pool({
+        connectionString,
+    })
+    const selectQueryChain = {
+        text: `SELECT * FROM chains`,
+        values: [],
+    }
+
+    const res1 = await pool.query(selectQueryChain)
+
+    const selectQueryType = {
+        text: `SELECT * FROM asset_type`,
+        values: [],
+    }
+
+    const res2 = await pool.query(selectQueryType)
+
+    res.render('addToken', { chains: res1.rows, types: res2.rows })
+})
+
 server.listen(PORT)
